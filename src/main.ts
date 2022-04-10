@@ -16,28 +16,56 @@ const emote = {
   ySpeed: 3,
   color: "black",
   img: new Image(),
+  name: "FeelsGoodMan",
 };
+
+const defaultEmoteSrc = "https://cdn.betterttv.net/frankerfacez_emote/145947/4";
+
+interface Emote {
+  code: string;
+  images: {
+    "1x": string;
+    "2x": string;
+    "4x": string;
+  };
+}
+
+let emoteList: Emote[] = [];
+
+fetch("https://api.betterttv.net/3/cached/frankerfacez/users/twitch/22484632")
+  .then((res) => res.json())
+  .then((emotes) => {
+    emoteList = emotes;
+  });
 
 let canvas: HTMLCanvasElement;
 let ctx: CanvasRenderingContext2D;
+let emoteNameEl = document.getElementById("emote-name");
 
-const pickRandomColor = () => {
-  const r = Math.random() * 254;
-  const g = Math.random() * 254;
-  const b = Math.random() * 254;
+const pickRandomEmote = () => {
+  const lastIndex = emoteList.length - 1;
+  const randomIndex = Math.floor(lastIndex * Math.random());
+  const randomEmote = emoteList[randomIndex];
+  const randomImage =
+    randomEmote?.images["4x"] ??
+    randomEmote?.images["2x"] ??
+    randomEmote?.images["1x"] ??
+    defaultEmoteSrc;
 
-  emote.color = `rgb(${r},${g},${b})`;
+  if (emoteNameEl) emoteNameEl.innerHTML = randomEmote?.code ?? "FeelsOkayMan";
+
+  emote.img.src = randomImage;
 };
 
 const checkCollision = () => {
-  if (emote.x + emote.img.width * config.scale >= canvas.width || emote.x <= 0) {
+  if (emote.x + 112 >= canvas.width || emote.x <= 0) {
     emote.xSpeed *= -1;
-    pickRandomColor();
+    pickRandomEmote();
   }
 
-  if (emote.y + emote.img.height * config.scale >= canvas.height || emote.y <= 0) {
+  if (emote.y + 108 >= canvas.height || emote.y <= 0) {
     emote.ySpeed *= -1;
-    pickRandomColor();
+    pickRandomEmote();
   }
 };
 
@@ -49,7 +77,7 @@ const update = () => {
 
     // Draw the emote
     ctx.fillStyle = emote.color;
-    ctx.fillRect(emote.x, emote.y, emote.img.width * config.scale, emote.img.height * config.scale);
+    ctx.fillRect(emote.x, emote.y, 112, 108);
     ctx.drawImage(
       emote.img,
       emote.x,
@@ -69,10 +97,12 @@ const update = () => {
 
 canvas = document.getElementById("screen")! as HTMLCanvasElement;
 ctx = canvas.getContext("2d")!;
-emote.img.src = "https://cdn.betterttv.net/emote/6151c623b63cc97ee6d39040/3x";
+
+if (emoteNameEl) emoteNameEl.innerHTML = "";
 
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
-pickRandomColor();
+pickRandomEmote();
+
 update();
