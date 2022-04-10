@@ -16,7 +16,7 @@ const emote = {
   ySpeed: 3,
   color: "black",
   img: new Image(),
-  name: "FeelsGoodMan",
+  name: "FeelsOkayMan",
 };
 
 const defaultEmoteSrc = "https://cdn.betterttv.net/frankerfacez_emote/145947/4";
