@@ -1,3 +1,11 @@
 body {
     margin: 0;
 }
+
+#emote-name {
+    position: absolute;
+    color: white;
+    left: 50%;
+    margin-right: -50%;
+    transform: translateX(-50%);
+}
